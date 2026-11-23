@@ -19,11 +19,13 @@ def create_database_engine(database_url: str, serverless: bool = False):
 
 
 settings = get_settings()
-engine = create_database_engine(
-    settings.database_url_value,
-    serverless=os.getenv("VERCEL") == "1",
-)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+engine = None
+if settings.database_url is not None:
+    engine = create_database_engine(
+        settings.database_url_value,
+        serverless=os.getenv("VERCEL") == "1",
+    )
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False) if engine is not None else None
 Base = declarative_base()
 
 

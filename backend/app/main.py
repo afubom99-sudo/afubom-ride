@@ -81,6 +81,11 @@ app.include_router(notifications.router, prefix="/api/v1")
 
 @app.get("/api/v1/health")
 def health():
+    if engine is None:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unhealthy", "database": "not_configured"},
+        )
     try:
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))

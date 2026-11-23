@@ -31,43 +31,50 @@ class Settings(BaseSettings):
         if self.app_env not in {"development", "test", "production"}:
             raise ValueError("APP_ENV must be development, test, or production")
 
-        if os.getenv("VERCEL_ENV") == "production" and self.app_env != "production":
-            raise ValueError("APP_ENV=production is required for Vercel production deployments")
+        if os.getenv("VERCEL_ENV") == "production":
+            self.app_env = "production"
 
         is_production = self.app_env == "production"
         database_url = self.database_url.get_secret_value() if self.database_url else ""
         if not database_url:
-            if is_production:
-                raise ValueError("DATABASE_URL is required when APP_ENV=production")
-            database_url = "sqlite:///./bamenda_bikes.db"
+            if not is_production:
+                database_url = "sqlite:///./bamenda_bikes.db"
+                self.database_url = SecretStr(database_url)
+        elif database_url:
+            try:
+                parsed_database_url = make_url(database_url)
+            except ArgumentError as exc:
+                raise ValueError("DATABASE_URL must be a valid SQLAlchemy URL") from exc
 
-        try:
-            parsed_database_url = make_url(database_url)
-        except ArgumentError as exc:
-            raise ValueError("DATABASE_URL must be a valid SQLAlchemy URL") from exc
+            if is_production and parsed_database_url.drivername not in {
+                "postgres",
+                "postgresql",
+                "postgresql+psycopg",
+            }:
+                raise ValueError("DATABASE_URL must use PostgreSQL when APP_ENV=production")
+            if is_production and (not parsed_database_url.host or not parsed_database_url.database):
+                raise ValueError("DATABASE_URL must include a PostgreSQL host and database name")
 
-        if is_production and parsed_database_url.drivername not in {
-            "postgres",
-            "postgresql",
-            "postgresql+psycopg",
-        }:
-            raise ValueError("DATABASE_URL must use PostgreSQL when APP_ENV=production")
-        if is_production and (not parsed_database_url.host or not parsed_database_url.database):
-            raise ValueError("DATABASE_URL must include a PostgreSQL host and database name")
-
-        if parsed_database_url.drivername in {"postgres", "postgresql"}:
-            parsed_database_url = parsed_database_url.set(drivername="postgresql+psycopg")
-        self.database_url = SecretStr(parsed_database_url.render_as_string(hide_password=False))
+            if parsed_database_url.drivername in {"postgres", "postgresql"}:
+                parsed_database_url = parsed_database_url.set(drivername="postgresql+psycopg")
+            self.database_url = SecretStr(parsed_database_url.render_as_string(hide_password=False))
 
         jwt_secret = self.jwt_secret.get_secret_value() if self.jwt_secret else ""
         if not jwt_secret:
-            if is_production:
-                raise ValueError("JWT_SECRET is required when APP_ENV=production")
-            jwt_secret = secrets.token_urlsafe(32)
-        if is_production and len(jwt_secret) < 32:
+            if not is_production:
+                jwt_secret = secrets.token_urlsafe(32)
+                self.jwt_secret = SecretStr(jwt_secret)
+        elif is_production and len(jwt_secret) < 32:
             raise ValueError("JWT_SECRET must be at least 32 characters in production")
-        self.jwt_secret = SecretStr(jwt_secret)
         return self
+
+    def validate_production_settings(self) -> None:
+        if self.app_env != "production":
+            return
+        if self.database_url is None:
+            raise RuntimeError("DATABASE_URL is required when APP_ENV=production")
+        if self.jwt_secret is None:
+            raise RuntimeError("JWT_SECRET is required when APP_ENV=production")
 
     @property
     def database_url_value(self) -> str:

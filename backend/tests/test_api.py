@@ -51,6 +51,7 @@ def test_health_hides_database_errors(monkeypatch):
     def fail_connect():
         raise OperationalError("SELECT 1", {}, Exception("private database details"))
 
+    assert main_module.engine is not None
     monkeypatch.setattr(main_module.engine, "connect", fail_connect)
     response = client.get("/api/v1/health")
     assert response.status_code == 503
@@ -70,26 +71,33 @@ def test_production_settings_require_database_url(monkeypatch):
     monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.delenv("JWT_SECRET", raising=False)
     monkeypatch.delenv("VERCEL_ENV", raising=False)
-    with pytest.raises(ValidationError, match="DATABASE_URL is required"):
-        Settings(_env_file=None, app_env="production", jwt_secret="x" * 32)
+    settings = Settings(_env_file=None, app_env="production", jwt_secret="x" * 32)
+    assert settings.database_url is None
+    with pytest.raises(RuntimeError, match="DATABASE_URL is required"):
+        settings.validate_production_settings()
 
 
 def test_production_settings_require_strong_jwt_secret(monkeypatch):
     monkeypatch.delenv("JWT_SECRET", raising=False)
     monkeypatch.delenv("VERCEL_ENV", raising=False)
-    with pytest.raises(ValidationError, match="JWT_SECRET is required"):
-        Settings(
-            _env_file=None,
-            app_env="production",
-            database_url="postgresql://user:password@db.example:5432/afubom",
-        )
+    settings = Settings(
+        _env_file=None,
+        app_env="production",
+        database_url="postgresql://user:password@db.example:5432/afubom",
+    )
+    assert settings.jwt_secret is None
+    with pytest.raises(RuntimeError, match="JWT_SECRET is required"):
+        settings.validate_production_settings()
 
 
-def test_vercel_production_requires_production_app_env(monkeypatch):
+def test_vercel_production_mode_infers_production(monkeypatch):
     monkeypatch.delenv("APP_ENV", raising=False)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("JWT_SECRET", raising=False)
     monkeypatch.setenv("VERCEL_ENV", "production")
-    with pytest.raises(ValidationError, match="APP_ENV=production is required"):
-        Settings(_env_file=None)
+    settings = Settings(_env_file=None)
+    assert settings.app_env == "production"
+    assert settings.database_url is None
 
 
 def test_postgresql_url_uses_psycopg_driver_and_hides_secrets():
