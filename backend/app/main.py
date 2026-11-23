@@ -1,9 +1,12 @@
+import logging
 from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 from api.v1 import admin, auth, bookings, complaints, notifications, payments, reviews, riders, tracking, users
 from core.config import get_settings
@@ -20,6 +23,7 @@ from models import (
 
 
 settings = get_settings()
+logger = logging.getLogger(__name__)
 app = FastAPI(
     title="Afubom ride",
     version="0.1.0",
@@ -60,7 +64,8 @@ async def safe_exception_handler(request: Request, exc: Exception):
     )
 
 
-Base.metadata.create_all(bind=engine)
+if settings.app_env != "production":
+    Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router, prefix="/api/v1")
 app.include_router(users.router, prefix="/api/v1")
@@ -76,7 +81,16 @@ app.include_router(notifications.router, prefix="/api/v1")
 
 @app.get("/api/v1/health")
 def health():
-    return {"status": "ok", "service": "afubom-ride-api"}
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except SQLAlchemyError as exc:
+        logger.error("Database health check failed (%s)", type(exc).__name__)
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unhealthy", "database": "unavailable"},
+        )
+    return {"status": "healthy", "database": "connected"}
 
 
 @app.get("/api/v1/public/config")

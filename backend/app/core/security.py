@@ -29,7 +29,7 @@ def create_access_token(subject: str, role: str) -> str:
         "exp": expires,
         "jti": str(uuid4()),
     }
-    return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+    return jwt.encode(payload, settings.jwt_secret_value, algorithm=settings.jwt_algorithm)
 
 
 def create_refresh_token(subject: str) -> str:
@@ -41,13 +41,13 @@ def create_refresh_token(subject: str) -> str:
         "exp": expires,
         "jti": str(uuid4()),
     }
-    return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
+    return jwt.encode(payload, settings.jwt_secret_value, algorithm=settings.jwt_algorithm)
 
 
 def decode_token(token: str) -> dict[str, Any]:
     settings = get_settings()
     try:
-        return jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
+        return jwt.decode(token, settings.jwt_secret_value, algorithms=[settings.jwt_algorithm])
     except JWTError as exc:
         raise ValueError("Invalid or expired token") from exc
 

@@ -1,18 +1,25 @@
+import sys
 from logging.config import fileConfig
+from pathlib import Path
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.core.config import get_settings
-from app.db.session import Base
-import app.models
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from core.config import get_settings
+from db.session import Base
+import models
 
 
 config = context.config
 if config.config_file_name:
     fileConfig(config.config_file_name)
 
-config.set_main_option("sqlalchemy.url", get_settings().database_url)
+config.set_main_option(
+    "sqlalchemy.url",
+    get_settings().database_url_value.replace("%", "%%"),
+)
 target_metadata = Base.metadata
 
 

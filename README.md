@@ -32,6 +32,29 @@ Open `http://127.0.0.1:8000`.
 
 The default SQLite database is suitable for local development. Use PostgreSQL for production.
 
+## Production on Vercel
+
+Set these variables for the Vercel Production environment. Keep credentials in Vercel Environment Variables, not in Git:
+
+- `APP_ENV=production`
+- `DATABASE_URL` set to the connection URL for a managed PostgreSQL database
+- `JWT_SECRET` set to a unique random value of at least 32 characters
+- `ALLOWED_ORIGINS` set to the production frontend origin, such as `https://afubom-ride.vercel.app`
+
+The production app refuses SQLite and missing secrets. It does not create tables at startup. Vercel uses a no-pool SQLAlchemy engine to avoid retaining connections between serverless invocations; other PostgreSQL environments use a small bounded pool.
+
+Before deploying against a new, empty PostgreSQL database, set the same database URL in a private local environment or untracked `backend/.env`, then run:
+
+```powershell
+cd backend
+$env:PYTHONPATH = (Resolve-Path .\app).Path
+python -m alembic upgrade head
+```
+
+If the database already has tables created by an earlier release, take a backup and run `python -m alembic check` to compare the live schema with the models. Only if it reports no pending changes, mark it as migrated with `python -m alembic stamp head`; this records the revision without changing tables. Do not run `upgrade head` against an existing unversioned schema without reviewing it first.
+
+The database health check is available at `/api/v1/health`. It returns HTTP 503 with a generic database status when the database cannot be reached.
+
 ### Docker Compose
 
 Run Compose from the workspace root:
