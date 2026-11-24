@@ -1,4 +1,4 @@
-﻿[project]
+[project]
 name = "afubom-ride"
 version = "0.1.0"
 requires-python = ">=3.11"
@@ -13,9 +13,9 @@ dependencies = [
     "python-multipart==0.0.20",
     "email-validator==2.2.0",
     "alembic==1.14.0",
-    "psycopg[binary]==3.2.3",
+   "psycopg[binary]==3.2.10",
     "httpx==0.28.1",
 ]
 
 [tool.vercel]
-entrypoint = "vercel:app"
+entrypoint = "backend.app.main:app"

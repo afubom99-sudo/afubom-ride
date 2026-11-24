@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from api.dependencies import require_roles
+from ..dependencies import require_roles
 from db.session import get_db
 from models import AccountStatus, Booking, RiderProfile, User, UserRole, VerificationStatus
 
