@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from backend.app.core.config import get_settings
 from backend.app.db.session import Base
-from backend.app from backend.app import models
+from backend.app import models
 
 
 config = context.config
