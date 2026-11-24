@@ -3,8 +3,8 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from ..dependencies import require_roles
-from db.session import get_db
-from models import AccountStatus, Booking, RiderProfile, User, UserRole, VerificationStatus
+from backend.app.db.session import get_db
+from backend.app.models import AccountStatus, Booking, RiderProfile, User, UserRole, VerificationStatus
 
 
 router = APIRouter(prefix="/admin", tags=["Administration"])

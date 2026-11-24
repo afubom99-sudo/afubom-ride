@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from api.dependencies import get_current_user, require_roles
-from db.session import get_db
-from models import (
+from backend.app.api.dependencies import get_current_user, require_roles
+from backend.app.db.session import get_db
+from backend.app.models import (
     Booking,
     BookingStatus,
     BookingStatusHistory,
@@ -14,14 +14,14 @@ from models import (
     User,
     UserRole,
 )
-from schemas import (
+from backend.app.schemas import (
     BookingCreateRequest,
     BookingResponse,
     FareEstimateRequest,
     FareResponse,
     StatusUpdateRequest,
 )
-from services.fare_service import calculate_fare
+from backend.app.services.fare_service import calculate_fare
 
 
 router = APIRouter(prefix="/bookings", tags=["Bookings"])

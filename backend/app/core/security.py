@@ -5,7 +5,7 @@ from uuid import uuid4
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from core.config import get_settings
+from .config import get_settings
 
 
 password_context = CryptContext(schemes=["argon2"], deprecated="auto")

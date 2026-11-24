@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from api.dependencies import require_roles
-from db.session import get_db
-from models import Booking, BookingStatus, RiderProfile, User, UserRole, VerificationStatus
-from schemas import RiderApplyRequest, RiderAvailabilityRequest
+from backend.app.api.dependencies import require_roles
+from backend.app.db.session import get_db
+from backend.app.models import Booking, BookingStatus, RiderProfile, User, UserRole, VerificationStatus
+from backend.app.schemas import RiderApplyRequest, RiderAvailabilityRequest
 
 
 router = APIRouter(prefix="/riders", tags=["Riders"])

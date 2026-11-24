@@ -1,6 +1,6 @@
 from math import asin, cos, radians, sin, sqrt
 
-from models import BookingType
+from backend.app.models import BookingType
 
 
 FARE_CONFIG = {

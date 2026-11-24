@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from sqlalchemy.pool import NullPool
 
-from core.config import get_settings
+from backend.app.core.config import get_settings
 
 
 def create_database_engine(database_url: str, serverless: bool = False):

@@ -3,10 +3,10 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from api.dependencies import get_current_user
-from db.session import get_db
-from models import Booking, Payment, PaymentStatus, User
-from services.payments import get_payment_provider
+from backend.app.api.dependencies import get_current_user
+from backend.app.db.session import get_db
+from backend.app.models import Booking, Payment, PaymentStatus, User
+from backend.app.services.payments import get_payment_provider
 
 
 router = APIRouter(prefix="/payments", tags=["Payments"])

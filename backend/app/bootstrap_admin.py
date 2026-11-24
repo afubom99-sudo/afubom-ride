@@ -2,9 +2,9 @@ import os
 
 from sqlalchemy import select
 
-from app.core.security import hash_password
-from app.db.session import SessionLocal
-from app.models import AccountStatus, User, UserRole, VerificationStatus
+from backend.app.core.security import hash_password
+from backend.app.db.session import SessionLocal
+from backend.app.models import AccountStatus, User, UserRole, VerificationStatus
 
 
 def bootstrap_admin():

@@ -3,9 +3,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from api.dependencies import get_current_user
-from db.session import get_db
-from models import Booking, BookingStatus, Review, RiderProfile, User
+from backend.app.api.dependencies import get_current_user
+from backend.app.db.session import get_db
+from backend.app.models import Booking, BookingStatus, Review, RiderProfile, User
 
 
 router = APIRouter(prefix="/reviews", tags=["Reviews"])

@@ -3,9 +3,9 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from api.dependencies import get_current_user, require_roles
-from db.session import get_db
-from models import Booking, Complaint, ComplaintStatus, User, UserRole
+from backend.app.api.dependencies import get_current_user, require_roles
+from backend.app.db.session import get_db
+from backend.app.models import Booking, Complaint, ComplaintStatus, User, UserRole
 
 
 router = APIRouter(prefix="/complaints", tags=["Complaints"])

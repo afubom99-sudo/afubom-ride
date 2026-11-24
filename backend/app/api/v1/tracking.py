@@ -4,12 +4,12 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from api.dependencies import get_current_user, require_roles
-from core.config import get_settings
-from core.security import decode_token
-from db.session import SessionLocal, get_db
-from models import Booking, BookingStatus, RiderLocation, RiderProfile, User, UserRole
-from schemas import LocationRequest
+from backend.app.api.dependencies import get_current_user, require_roles
+from backend.app.core.config import get_settings
+from backend.app.core.security import decode_token
+from backend.app.db.session import SessionLocal, get_db
+from backend.app.models import Booking, BookingStatus, RiderLocation, RiderProfile, User, UserRole
+from backend.app.schemas import LocationRequest
 
 
 router = APIRouter(prefix="/tracking", tags=["Tracking"])

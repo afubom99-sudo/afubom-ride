@@ -7,9 +7,9 @@ from sqlalchemy import engine_from_config, pool
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from core.config import get_settings
-from db.session import Base
-import models
+from backend.app.core.config import get_settings
+from backend.app.db.session import Base
+from backend.app from backend.app import models
 
 
 config = context.config

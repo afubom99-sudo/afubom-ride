@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field
 
-from models import BookingStatus, BookingType, PaymentStatus, VerificationStatus
+from backend.app.models import BookingStatus, BookingType, PaymentStatus, VerificationStatus
 
 
 class RegisterRequest(BaseModel):

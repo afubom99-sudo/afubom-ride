@@ -1,9 +1,9 @@
 from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
-from core.security import decode_token
-from db.session import get_db
-from models import AccountStatus, User, UserRole
+from backend.app.core.security import decode_token
+from backend.app.db.session import get_db
+from backend.app.models import AccountStatus, User, UserRole
 
 
 def get_current_user(

@@ -7,10 +7,11 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
+from backend.app.core.config import get_settings
 
 from backend.app.api.v1 import admin, auth, bookings, complaints, notifications, payments, reviews, riders, tracking, users
-from db.session import Base, engine
-from models import (
+from backend.app.db.session import Base, engine
+from backend.app.models import (
     Booking,
     BookingStatusHistory,
     Payment,
